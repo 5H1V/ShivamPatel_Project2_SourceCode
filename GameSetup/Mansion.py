@@ -6,6 +6,11 @@ class Mansion:
 
         return
 
+    def tiles():
+        # 25 x 25 board
+        # 0,0 in bottom left
+        #
+        return
     def Kitchen():
 
         return
@@ -23,7 +28,7 @@ class Mansion:
         return
 
     def Hall():
-
+        (9,0)->(114,5)
         return
 
     def BillardRoom():
@@ -39,7 +44,7 @@ class Mansion:
         return
 
     def Lounge():
-
+        (0,0) -> (6,5)
         return
 
 
@@ -53,6 +58,7 @@ class Mansion:
     Node(Conservatory)
     Node(DiningRoom)
     Node(Lounge)
+    Edge(Kitchen)
 """
 """
 Mansion Layout:
