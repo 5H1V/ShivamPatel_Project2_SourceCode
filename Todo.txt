@@ -1,0 +1,25 @@
+Finished
+- Drew Board Layout
+- Created solution
+- Shuffled cards and handed out to players
+
+Remaining
+- Assign random starting position to players
+- Implement dice rolling simulation
+- Move players
+- Add restrictions for moving players (through walls, out of bounds, etc.)
+- Add option to enter room
+- Add option to make a assumption (player, room, weapon)
+- Add option for next player to show 1 of their cards if matches
+    - Add while loop to go until 1 player shows 1 card, or else next player's turn
+- Add option to take secret when given chance
+- Add option to exit room
+- Add restrictions to entering same room
+- Add restrictions to entering 2 rooms in 1 roll
+- Add option to move to next player's turn----REPEAT ALL ABOVE STEPS
+- Add option to move into center room and make 1 assumption.
+    - If correct, player wins
+    - If incorrect, player skips all future turns BUT STILL HAS TO SHOW CARDS WHEN ASKED
+- Add option for each player to keep track of pieces remaining on board
+- Add option for players to make guesses based on what they know
+    - If player is correct, they win; else update what they know
