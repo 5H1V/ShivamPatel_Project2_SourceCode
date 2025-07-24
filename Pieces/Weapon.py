@@ -1,27 +1,17 @@
+class Weapon:
 
-
-class Character:
-
-    def __init__(self, characters, position):
+    def __init__(self, weapons, position):
 
         return
     
-    def characters_list(self):
-        scarlet = "Miss Scarlett"
-        mustard = "Colonel Mustard"
-        white = "Mrs. White"
-        green = "Reverend Green"
-        peacock = "Mrs. Peacock"
-        plum = "Professor Plum"
+    weapons = {6 : "Candlestick",
+            7 : "Dagger",
+            8 : "Lead Pipe",
+            9 : "Revolver",
+            10 : "Rope",
+            11 : "Wrench"}
 
 
-"""
-Character Definition:
-
-Define the 6 standard Cluedo characters: .
-
-Assign each character a starting position on the board.
-"""
 
 
 """
