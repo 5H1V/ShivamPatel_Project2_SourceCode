@@ -11,12 +11,6 @@ class DrawBoard:
         return
 
     def draw_cluedo_board():
-        fig, ax = plt.subplots(figsize=(25, 25))
-        ax.set_xlim(0,25)
-        ax.set_ylim(0,25)
-        ax.set_xticks(range(26))
-        ax.set_yticks(range(26))
-        ax.grid(True)
 
         # Coordinates of room boundaries
         rooms = {
@@ -54,7 +48,29 @@ class DrawBoard:
         secret = [(6,7,5,5),(17,18,3,3),(4,5,19,19),(18,19,21,21)]
 
         for x1,x2,y1,y2 in secret:
-            plt.plot([x1,x2],[y1,y2],color='black')
+            plt.plot([x1,x2],[y1,y2],color='green')
+            
+        game_walls = [(0,0),(6,0),(6,1),(7,1),(7,0),(8,0),(8,1),(9,1),(9,0),
+                      (15,0),(15,1),(16,1),(16,0),(17,0),(17,1),(18,1),(18,0),
+                      (24,0),(24,4),(23,4),(23,5),(24,5),(24,6),(23,6),(23,7),
+                      (24,7),(24,10),(23,10),(23,12),(24,12),(24,17),(23,17),
+                      (23,18),(24,18),(24,19),(23,19),(23,20),(24,20),(24,24),
+                      (18,24),(18,23),(17,23),(17,24),(15,24),(15,25),(9,25),
+                      (9,24),(7,24),(7,23),(6,23),(6,24),(0,24),(0,19),(1,19),
+                      (1,18),(0,18),(0,17),(1,17),(1,16),(0,16),(0,9),(1,9),
+                      (1,8),(0,8),(0,7),(1,7),(1,6),(0,6),(0,0)]
+        
+        x_vals = [x for x,y in game_walls]
+        y_vals = [y for x,y in game_walls]
+        
+        plt.plot(x_vals, y_vals, color='black')
+
+        plt.xticks([])
+        plt.yticks([])
+        for spine in plt.gca().spines.values():
+            spine.set_visible(False)
+        
+        plt.show()
 
 
     def tiles():
@@ -79,7 +95,7 @@ class DrawBoard:
         return
 
     def Hall():
-        (9,0)->(114,5)
+        #(9,0)->(114,5)
         return
 
     def BillardRoom():
@@ -95,7 +111,7 @@ class DrawBoard:
         return
 
     def Lounge():
-        (0,0) -> (6,5)
+        #(0,0) -> (6,5)
         return
 
 
@@ -121,3 +137,6 @@ game rules (e.g., Study to Kitchen, Conservatory to Lounge). Define designated s
 typically in hallways or outside specific rooms.
 
 """
+
+if __name__=="__main__":
+    DrawBoard.draw_cluedo_board()
