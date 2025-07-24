@@ -6,46 +6,7 @@ class Mansion:
 
         return
 
-    def tiles():
-        # 25 x 25 board
-        # 0,0 in bottom left
-        #
-        return
-    def Kitchen():
 
-        return
-    
-    def Library():
-
-        return
-
-    def Ballroom():
-
-        return
-
-    def Study():
-
-        return
-
-    def Hall():
-        (9,0)->(114,5)
-        return
-
-    def BillardRoom():
-
-        return
-
-    def Conservatory():
-
-        return
-
-    def DiningRoom():
-
-        return
-
-    def Lounge():
-        (0,0) -> (6,5)
-        return
 
 
 """
