@@ -1,5 +1,6 @@
 Finished
-- Drew Board Layout
+- Created Position Matrix
+- Created visualization of board
 - Created solution
 - Shuffled cards and handed out to players
 
@@ -8,6 +9,7 @@ Remaining
 - Implement dice rolling simulation
 - Move players
 - Add restrictions for moving players (through walls, out of bounds, etc.)
+    - Cannot end on same spot as another player (if next move lands on player and move is last move, stop short 1 if no other option)
 - Add option to enter room
 - Add option to make a assumption (player, room, weapon)
 - Add option for next player to show 1 of their cards if matches

@@ -1,3 +1,5 @@
 matplotlib.pyplot
+matplotlib.patches
+matplotlib.path
+random
 numpy
-pandas
