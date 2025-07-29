@@ -1,14 +1,28 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
+from board.board_builder import build_board
+from board.visualization import visualize_board
+from logic.card_dealing import deal_cards
+from logic.player_state import PlayerState
+from game_config import players, starting_positions, solution
 
-from Board import DrawBoard
-from Board import Rooms
+def main():
+    # Build and display board
+    board = build_board()
+    visualize_board(board)
 
-class main():
+    # Initialize players
+    player_states = {
+        name: PlayerState(name, pos)
+        for name, pos in zip(players, starting_positions)
+    }
 
-    def __init__(self):
-        return
+    # Deal cards
+    card_hands = deal_cards(players, solution)
+    for name, cards in card_hands.items():
+        player_states[name].cards = cards
 
+    # Output each player's cards
+    for name, state in player_states.items():
+        print(f"{name} cards: {state.cards}")
 
-    if __name__=="__main__":
+if __name__ == "__main__":
+    main()
