@@ -1,22 +1,22 @@
-from board.board_builder import build_board
-from board.visualization import visualize_board
-from logic.card_dealing import deal_cards
-from logic.player_state import PlayerState
+from Board.BoardBuilder import position_matrix
+from Board.DrawBoard import drawBoard
+from Logic.CardStates import hand_out_cards
+from Logic.PlayerStates import PlayerStates
 from game_config import players, starting_positions, solution
 
 def main():
     # Build and display board
-    board = build_board()
-    visualize_board(board)
+    board = position_matrix()
+    drawBoard(board)
 
     # Initialize players
     player_states = {
-        name: PlayerState(name, pos)
-        for name, pos in zip(players, starting_positions)
+        name: PlayerStates(name, pos)
+        for name, pos in zip(players.values(), starting_positions)
     }
 
     # Deal cards
-    card_hands = deal_cards(players, solution)
+    card_hands = hand_out_cards(players.values(), solution)
     for name, cards in card_hands.items():
         player_states[name].cards = cards
 
