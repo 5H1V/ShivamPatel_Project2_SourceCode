@@ -1,23 +1,22 @@
 import random
 import numpy as np
-from board.board_builder import position_matrix
-from board.DrawBoard import draw_board, draw_simple_board
+from game_config import solution, board_labels, rooms, players, weapons, player_start_positions
+from board.DrawBoard import draw_board, position_matrix
 from logic.card_dealing import deal_cards
-from logic.player_state import initialize_players
+
 from logic.game_mechanics import roll_dice, move_player, make_suggestion, use_secret_passage, make_accusation
 from logic.game_state import CluedoGame
-from game_config import generate_solution, board_labels, rooms, players, weapons, player_start_positions
 
 def main():
-    print("Welcome to Cluedo!")
+    print("Cluedo!")
     print("===================")
 
-    # Setup
-    player_names = ["Miss Scarlett", "Colonel Mustard", "Mrs. White", "Reverend Green", "Mrs. Peacock", "Professor Plum"]
-    board = position_matrix()
-    
-    # Generate solution
-    game_solution = generate_solution()
+    board = np.full((25, 25), board_labels["Empty"], dtype=int)
+
+    player_names = list(players.values())
+    board = position_matrix(board)
+
+    game_solution = solution
     print(f"DEBUG: Solution is {rooms[game_solution['room']]}, {players[game_solution['player']]}, {weapons[game_solution['weapon']]}")
     
     # Deal cards (excluding solution cards)
@@ -27,29 +26,21 @@ def main():
     player_states = {}
     for player_name in player_names:
         start_pos = player_start_positions.get(player_name, (12, 12))  # Default center if not found
-        player_states[player_name] = {
-            "position": start_pos,
-            "eliminated": False
-        }
+        player_states[player_name] = {"position": start_pos,"eliminated": False}
     
     # Create game state manager
     game = CluedoGame(player_names, board, card_hands, game_solution)
     
     # Show initial board
-    print("\nWould you like to see the board? (yes/no)")
-    show_board = input().lower().strip()
-    if show_board == "yes":
-        try:
-            # Try to show graphical board
-            positions = {name: state["position"] for name, state in player_states.items()}
-            draw_board(board, positions)
-        except:
-            # Fall back to text board
-            print("Graphical board not available, showing text version:")
-            draw_simple_board(board)
+    positions = {name: state["position"] for name, state in player_states.items()}
+    for y, x in positions.values():
+        print(x,y)
 
-    print(f"\nGame starting with {len(player_names)} players!")
-    
+    draw_board(board, positions)
+
+    print(f"\nGame Start!")
+    #----------------------------------------------------#
+
     # Main game loop
     turn_count = 0
     while not game.is_game_over():

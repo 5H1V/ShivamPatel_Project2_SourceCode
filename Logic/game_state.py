@@ -14,31 +14,27 @@ class CluedoGame:
         self.winner = None
 
     def next_player(self):
-        """Move to the next active player"""
+        """Next player's turn"""
         original_index = self.current_player_index
         while True:
             self.current_player_index = (self.current_player_index + 1) % len(self.player_names)
             current_player = self.player_names[self.current_player_index]
-            
-            # If we've looped back to the original player, break to avoid infinite loop
+
             if self.current_player_index == original_index:
                 break
-                
-            # If this player is not eliminated, we found our next player
             if current_player not in self.eliminated:
                 break
 
     def get_current_player(self):
-        """Get the current active player"""
+        """Get the current player"""
         return self.player_names[self.current_player_index]
 
     def get_active_players(self):
-        """Get list of players who haven't been eliminated"""
+        """Get list of players who are still playing"""
         return [player for player in self.player_names if player not in self.eliminated]
 
     def make_suggestion(self, player, person_name, weapon_name, room_name):
         """Handle a player making a suggestion"""
-        # Convert names to IDs
         person_id = self._get_player_id_by_name(person_name)
         weapon_id = self._get_weapon_id_by_name(weapon_name)
         room_id = self._get_room_id_by_name(room_name)

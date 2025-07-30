@@ -1,10 +1,10 @@
 import random
-from game_config import rooms, players, weapons
+from game_config import rooms, players, weapons, get_all_cards
 
 def deal_cards(player_names, solution_cards):
     """Deal cards to players, excluding the solution cards"""
-    # Create full deck
-    all_cards = list(rooms.keys()) + list(players.keys()) + list(weapons.keys())
+    # Full deck
+    all_cards = get_all_cards()
     
     # Remove solution cards from deck
     remaining_cards = [card for card in all_cards if card not in solution_cards]
@@ -14,7 +14,7 @@ def deal_cards(player_names, solution_cards):
     
     # Initialize hands
     card_hands = {player: [] for player in player_names}
-    
+
     # Deal cards evenly
     current_player = 0
     for card in remaining_cards:
@@ -22,7 +22,7 @@ def deal_cards(player_names, solution_cards):
         card_hands[player_name].append(card)
         current_player = (current_player + 1) % len(player_names)
     
-    # Print hands for debugging (remove in production)
+    # Print hands for debugging (remove)
     print("\n=== CARD DISTRIBUTION ===")
     for player, cards in card_hands.items():
         card_names = []

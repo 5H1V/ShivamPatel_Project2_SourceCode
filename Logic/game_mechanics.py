@@ -1,11 +1,9 @@
 import random
 from game_config import board_labels, rooms, players, weapons
 
-# --- Dice Rolling Function ---
 def roll_dice():
     return random.randint(1, 6)
 
-# --- Movement Functions ---
 def move_player(player_name, steps, board, player_states):
     """Handle player movement with step-by-step validation"""
     current_pos = player_states[player_name]["position"]
