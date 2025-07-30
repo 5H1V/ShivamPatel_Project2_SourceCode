@@ -13,25 +13,25 @@ class Player:
         self.winner = None
     
     
-    def _get_player_id_by_name(self, name):
+    def get_player_id_by_name(self, name):
         for pid, pname in players.items():
             if pname.lower() == name.lower():
                 return pid
         return None
 
-    def _get_weapon_id_by_name(self, name):
+    def get_weapon_id_by_name(self, name):
         for wid, wname in weapons.items():
             if wname.lower() == name.lower():
                 return wid
         return None
 
-    def _get_room_id_by_name(self, name):
+    def get_room_id_by_name(self, name):
         for rid, rname in rooms.items():
             if rname.lower() == name.lower():
                 return rid
         return None
 
-    def _get_card_name(self, card_id):
+    def get_card_name(self, card_id):
         if card_id in rooms:
             return rooms[card_id]
         elif card_id in players:
@@ -41,6 +41,4 @@ class Player:
         return f"Unknown card {card_id}"
 
     def get_player_hand_names(self, player):
-        if player not in self.card_hand:
-            return []
-        return [self._get_card_name(card) for card in self.card_hand]
+        return [self.get_card_name(card) for card in self.card_hand]

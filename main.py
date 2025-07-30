@@ -6,7 +6,6 @@ from logic.card_dealing import deal_cards
 from logic.player_state import Player
 from logic.game_state import CluedoGame
 
-from logic.temp import move_player
 
 def main():
     print("Cluedo!")
@@ -36,7 +35,7 @@ def main():
 
     # Main game loop
     turn_count = 0
-    while not game.is_game_over():
+    while not game.is_game_over(player_states):
         current_player = game.get_current_player()
         
         if player_states.get(player).eliminated:
@@ -45,7 +44,7 @@ def main():
         
         turn_count += 1
 
-        player_card_names = player_states.get_player_hand_names(current_player)
+        player_card_names = player_states.get(current_player).get_player_hand_names(current_player)
         print(f"Your cards: {', '.join(player_card_names)}")
         
         current_pos = player_states.get(current_player).current_position
@@ -64,9 +63,9 @@ def main():
                         new_room_name = rooms[new_room]
                         print(f"{current_player} used a secret passage to the {new_room_name}.")
 
-                        game.make_suggestion_in_room(player_states, current_player, new_room)
+                        game.make_suggestion_in_room(player_states.get(current_player), current_player, new_room)
                         
-                        if game.ask_for_accusation(player_states, current_player):
+                        if game.ask_for_accusation(player_states.get(current_player), current_player):
                             break
                         
                         game.next_player()
@@ -77,16 +76,16 @@ def main():
         steps = random.randint(1, 6)
         print(f"{current_player} rolled a {steps}.")
 
-        success, new_room = move_player(game, player_states, current_player, steps, board)
+        success, new_room = game.move_player(player_states, current_player, steps, board)
 
         if success and new_room:
             room_name = rooms[new_room]
             print(f"{current_player} entered the {room_name}.")
-            game.make_suggestion_in_room(player_states, current_player, new_room)
+            game.make_suggestion_in_room(player_states.get(current_player), current_player, new_room)
         elif not success:
             print("Movement completed.")
 
-        if game.ask_for_accusation(player_states, current_player):
+        if game.ask_for_accusation(player_states.get(current_player), current_player):
             break
 
         game.next_player()

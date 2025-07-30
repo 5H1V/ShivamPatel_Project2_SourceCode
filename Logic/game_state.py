@@ -1,6 +1,6 @@
 import random
 from game_config import rooms, players, weapons, secret_passages, valid_players, valid_rooms, valid_weapons, solution, board_labels
-from player_state import Player
+from logic.player_state import Player
 
 class CluedoGame:
     def __init__(self, player_states, board, solution):
@@ -79,7 +79,7 @@ class CluedoGame:
 
 #----------------------------------------------------#
     ### FIXXXXXXXXXXXXXXXXXXXXXX
-    def _find_room_position(self, room_id, board):
+    def find_room_position(self, room_id, board):
         for y in range(board.shape[0]):
             for x in range(board.shape[1]):
                 if board[y, x] == room_id:
@@ -102,8 +102,8 @@ class CluedoGame:
         make_suggestion = input("Do you want to make a suggestion? (yes/no): ").lower().strip()
 
         if make_suggestion == "yes":
-            players_list = [name for name in player_states.get(player_name).knowledge if name in valid_players]
-            weapons_list = [weapon for weapon in player_states.get(player_name).knowledge if weapon in valid_weapons]
+            players_list = [name for name in player_states.knowledge if name in valid_players]
+            weapons_list = [weapon for weapon in player_states.knowledge if weapon in valid_weapons]
             print("Available characters:", players_list)
             print("Available weapons:", weapons_list)
             
@@ -121,9 +121,9 @@ class CluedoGame:
         accuse = input("Do you want to make an accusation? (yes/no): ").lower().strip()
         
         if accuse == "yes":
-            players_list = [name for name in player_states.get(player_name).knowledge if name in valid_players]
-            weapons_list = [weapon for weapon in player_states.get(player_name).knowledge if weapon in valid_weapons]
-            rooms_list = [room for room in player_states.get(player_name).knowledge if room in valid_rooms]
+            players_list = [name for name in player_states.knowledge if name in valid_players]
+            weapons_list = [weapon for weapon in player_states.knowledge if weapon in valid_weapons]
+            rooms_list = [room for room in player_states.knowledge if room in valid_rooms]
 
             print("Available characters:", players_list)
             print("Available weapons:", weapons_list)
@@ -233,7 +233,7 @@ class CluedoGame:
         current_room = self.get_current_room(new_pos, board)
         return True, current_room
 
-    def _is_valid_position(self, pos, board):
+    def is_valid_position(self, pos, board):
         y, x = pos
         if y < 0 or y >= board.shape[0] or x < 0 or x >= board.shape[1]:
             return False
