@@ -6,10 +6,10 @@ class CluedoGame:
     def __init__(self, player_states, board, solution):
         self.player_names = list(player_states.keys())
         self.board = board
-        self.card_hands = [player.card_hand for player in player_states.values()]
+        self.card_hands = {name: player.card_hand for name, player in player_states.items()}
         self.solution = solution
         self.current_player_index = 0
-        self.eliminated = [player.eliminated for player in player_states.values()]
+        self.eliminated = []
         self.game_won = False
         self.winner = None
 
@@ -31,10 +31,23 @@ class CluedoGame:
         return [player for player in self.player_names if not player_states.get(player).eliminated]
 
     def make_suggestion(self, player_states, player, person_name, weapon_name, room_name):
-        person_id = player_states._get_player_id_by_name(person_name)
-        weapon_id = player_states._get_weapon_id_by_name(weapon_name)
-        room_id = player_states._get_room_id_by_name(room_name)
-        
+        person_id = None
+        weapon_id = None
+        room_id = None
+
+        for pid, pname in players.items():
+            if pname.lower() == person_name.lower():
+                person_id = pid
+                break
+        for wid, wname in weapons.items():
+            if wname.lower() == weapon_name.lower():
+                weapon_id = wid
+                break
+        for rid, rname in rooms.items():
+            if rname.lower() == room_name.lower():
+                room_id = rid
+                break
+
         if not all([person_id, weapon_id, room_id]):
             print("Invalid suggestion - couldn't find matching cards")
             return None
@@ -47,7 +60,7 @@ class CluedoGame:
             other_index = (player_index + i) % len(self.player_names)
             other_player = self.player_names[other_index]
             
-            if player_states.get(player).eliminated:
+            if player_states.get(other_player).eliminated:
                 continue
                 
             hand = self.card_hands[other_player]
@@ -55,17 +68,28 @@ class CluedoGame:
             
             if matching_cards:
                 shown_card = random.choice(matching_cards)
-                shown_card_name = player_states._get_card_name(shown_card)
+                shown_card_name = self.get_card_name(shown_card)
                 print(f"{other_player} shows the {shown_card_name} card to {player}.")
 
                 # MAKE SUGGESTION RETURNS A CARD THAT THE OTHER PLAYER SHOWS.
                 # REMOVE THIS CARD FROM THE KNOWLEDGE
-                player_states.get(player).knowledge.remove(shown_card_name)
+                if shown_card in player_states.get(player).knowledge:
+                    player_states.get(player).knowledge.remove(shown_card)
+
                 return shown_card
 
         print("No one could disprove the suggestion.")
         return None
 
+    def get_card_name(self, card_id):
+        if card_id in rooms:
+            return rooms[card_id]
+        elif card_id in players:
+            return players[card_id]
+        elif card_id in weapons:
+            return weapons[card_id]
+        return f"Unknown card {card_id}"
+    
     def get_current_room(self, position, board):
         y, x = position
         if 0 <= y < board.shape[0] and 0 <= x < board.shape[1]:
@@ -89,7 +113,7 @@ class CluedoGame:
     def use_secret_passage(self, player_name, player_states, board, current_room):
         target_room = secret_passages.get(current_room)
         if target_room:
-            target_pos = self._find_room_position(target_room, board)
+            target_pos = self.find_room_position(target_room, board)
             if target_pos:
                 player_states.get(player_name).current_position = target_pos
                 return target_room
@@ -97,15 +121,17 @@ class CluedoGame:
 
     def make_suggestion_in_room(self, player_states, player_name, room_id):
         room_name = rooms[room_id]
+        player_state = player_states.get(player_name)
         
         print(f"\n{player_name}, you can make a suggestion in the {room_name}.")
         make_suggestion = input("Do you want to make a suggestion? (yes/no): ").lower().strip()
 
         if make_suggestion == "yes":
-            players_list = [name for name in player_states.knowledge if name in valid_players]
-            weapons_list = [weapon for weapon in player_states.knowledge if weapon in valid_weapons]
-            print("Available characters:", players_list)
-            print("Available weapons:", weapons_list)
+            available_players = [pname for pname in players.values() if any(pid for pid in players.keys() if pid in player_state.knowledge and players[pid]==pname)]
+            available_weapons = [wname for wname in weapons.values() if any(wid for wid in weapons.keys() if wid in player_state.knowledge and weapons[wid]==wname)]
+            
+            print("Available characters:", available_players)
+            print("Available weapons:", available_weapons)
             
             character_name = input("Suggest a character: ").strip()
             weapon_name = input("Suggest a weapon: ").strip()
@@ -118,16 +144,17 @@ class CluedoGame:
                 print("Nobody could disprove your suggestion!")
 
     def ask_for_accusation(self, player_states, player_name):
+        player_state = player_states.get(player_name)
         accuse = input("Do you want to make an accusation? (yes/no): ").lower().strip()
         
         if accuse == "yes":
-            players_list = [name for name in player_states.knowledge if name in valid_players]
-            weapons_list = [weapon for weapon in player_states.knowledge if weapon in valid_weapons]
-            rooms_list = [room for room in player_states.knowledge if room in valid_rooms]
+            available_players = [pname for pname in players.values() if any(pid for pid in players.keys() if pid in player_state.knowledge and players[pid]==pname)]
+            available_weapons = [wname for wname in weapons.values() if any(wid for wid in weapons.keys() if wid in player_state.knowledge and weapons[wid]==wname)]
+            available_rooms = [rname for rname in rooms.values() if any(rid for rid in rooms.keys() if rid in player_state.knowledge and rooms[rid]==rname)]
 
-            print("Available characters:", players_list)
-            print("Available weapons:", weapons_list)
-            print("Available rooms:", rooms_list)
+            print("Available characters:", available_players)
+            print("Available weapons:", available_weapons)
+            print("Available rooms:", available_rooms)
             
             character = input("Accuse a character: ").strip()
             weapon = input("Accuse a weapon: ").strip()
@@ -142,19 +169,30 @@ class CluedoGame:
 
     def make_accusation(self, player_states, player, person_name, weapon_name, room_name):
 
-        person_id = player_states._get_player_id_by_name(person_name)
-        weapon_id = player_states._get_weapon_id_by_name(weapon_name)
-        room_id = player_states._get_room_id_by_name(room_name)
-        
-        accusation = [person_id, weapon_id, room_id]
+        person_id = None
+        weapon_id = None
+        room_id = None
 
-        if not all(accusation):
+        for pid, pname in players.items():
+            if pname.lower() == person_name.lower():
+                person_id = pid
+                break
+        for wid, wname in weapons.items():
+            if wname.lower() == weapon_name.lower():
+                weapon_id = wid
+                break
+        for rid, rname in rooms.items():
+            if rname.lower() == room_name.lower():
+                room_id = rid
+                break
+
+        if not all([person_id, weapon_id, room_id]):
             print("Invalid accusation - couldn't find matching cards")
             return False
             
         print(f"{player} accuses {person_name} in the {room_name} with the {weapon_name}!")
         
-        accusation_correct = (accusation == [self.solution['player'], self.solution['weapon'], self.solution['room']])
+        accusation_correct = (person_id==self.solution['player'] and weapon_id==self.solution['weapon'] and room_id==self.solution['room'])
         
         if accusation_correct:
             print(f"{player} wins the game!")
@@ -172,7 +210,6 @@ class CluedoGame:
         """End game"""
         if self.game_won:
             return True
-
         active_players = self.get_active_players(player_states)
         return len(active_players) <= 1
 
@@ -180,7 +217,6 @@ class CluedoGame:
         """Winner"""
         if self.winner:
             return self.winner
-
         active_players = self.get_active_players(player_states)
         if len(active_players) == 1:
             return active_players[0]
@@ -237,7 +273,6 @@ class CluedoGame:
         y, x = pos
         if y < 0 or y >= board.shape[0] or x < 0 or x >= board.shape[1]:
             return False
-        
         cell_value = board[y, x]
         return cell_value != board_labels["Invalid"]
 

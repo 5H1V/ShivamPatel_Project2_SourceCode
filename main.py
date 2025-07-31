@@ -10,12 +10,9 @@ from logic.game_state import CluedoGame
 def main():
     print("Cluedo!")
     print("===================")
-
     board = np.full((25, 25), board_labels["Empty"], dtype=int)
-
     player_names = list(players.values())
     board = position_matrix(board)
-
     game_solution = solution
     print(f"DEBUG: Solution is {rooms[game_solution['room']]}, {players[game_solution['player']]}, {weapons[game_solution['weapon']]}")
     
@@ -31,14 +28,15 @@ def main():
 
     draw_board(board, positions)
 
-    print(f"\nGame Start!")
+    print(f"\nGame Start!\n")
 
     # Main game loop
     turn_count = 0
     while not game.is_game_over(player_states):
         current_player = game.get_current_player()
+        print(f"Current Player: {current_player}")
         
-        if player_states.get(player).eliminated:
+        if player_states.get(current_player).eliminated:
             game.next_player()
             continue
         
@@ -63,9 +61,9 @@ def main():
                         new_room_name = rooms[new_room]
                         print(f"{current_player} used a secret passage to the {new_room_name}.")
 
-                        game.make_suggestion_in_room(player_states.get(current_player), current_player, new_room)
+                        game.make_suggestion_in_room(player_states, current_player, new_room)
                         
-                        if game.ask_for_accusation(player_states.get(current_player), current_player):
+                        if game.ask_for_accusation(player_states, current_player):
                             break
                         
                         game.next_player()
@@ -81,11 +79,11 @@ def main():
         if success and new_room:
             room_name = rooms[new_room]
             print(f"{current_player} entered the {room_name}.")
-            game.make_suggestion_in_room(player_states.get(current_player), current_player, new_room)
+            game.make_suggestion_in_room(player_states, current_player, new_room)
         elif not success:
             print("Movement completed.")
 
-        if game.ask_for_accusation(player_states.get(current_player), current_player):
+        if game.ask_for_accusation(player_states, current_player):
             break
 
         game.next_player()
@@ -99,7 +97,7 @@ def print_game_results(game, player_states):
     print("GAME OVER")
     print("="*60)
     
-    winner = game.get_winner()
+    winner = game.get_winner(player_states)
     if winner:
         print(f"{winner} wins the game!")
     else:
@@ -107,12 +105,11 @@ def print_game_results(game, player_states):
     
     print(f"\nThe correct solution was: {game.get_solution_string()}")
 
-    if any(state.eliminated for state in player_states.values()):
-        all_eliminated = [name for state in player_states.values() for name in state.eliminated]
-        print(f"Eliminated players: {', '.join(all_eliminated)}")
+    eliminated_players = [name for name, state in player_states.items() if state.eliminated]
+    if eliminated_players:
+        print(f"Eliminated players: {', '.join(eliminated_players)}")
 
     print("\nThank you for playing Cluedo!")
-
 
 if __name__ == "__main__":
     main()

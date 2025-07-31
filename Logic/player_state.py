@@ -8,11 +8,11 @@ class Player:
         self.card_hand = card_hand.get(name)
         self.current_position = player_start_positions.get(name)
         self.knowledge = get_all_cards()
-        self.eliminated = set()
+        self.eliminated = False
         self.game_won = False
         self.winner = None
     
-    
+
     def get_player_id_by_name(self, name):
         for pid, pname in players.items():
             if pname.lower() == name.lower():
