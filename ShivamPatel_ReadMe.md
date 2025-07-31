@@ -3,10 +3,10 @@
 
 ## Cloning Repository
 If cloning from Github,
-- The repository for the code is located at {}.
+- The repository for the code is located at https://github.com/5H1V/Cleudo.git.
 - To clone the repository, run the following line in the command line:
 ```bash
-git clone {}
+git clone https://github.com/5H1V/Cleudo.git
 ```
 
 ---
