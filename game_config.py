@@ -1,6 +1,6 @@
 import random
 
-# Mappings for room id to room for shuffle purposes
+# Mappings for room id, room
 rooms = {
     2: "Ballroom",
     3: "Billiard Room",
@@ -13,7 +13,7 @@ rooms = {
     10: "Study"
 }
 
-# Mappings for character id to character for shuffle purposes
+# Mappings for character id, character
 players = {
     11: "Miss Scarlett",
     12: "Colonel Mustard",
@@ -23,7 +23,7 @@ players = {
     16: "Professor Plum"
 }
 
-# Mappings for weapon id to weapon for shuffle purposes
+# Mappings for weapon id, weapon
 weapons = {
     17: "Candlestick",
     18: "Dagger",
@@ -33,7 +33,7 @@ weapons = {
     22: "Wrench"
 }
 
-# Mappings for square, status for game tracking purposes
+# Mappings for square, status
 board_labels = {
     "Invalid": -1,
     "Empty": 0,
@@ -52,7 +52,7 @@ board_labels = {
     "Secret": 13
 }
 
-# Room coordinates, vertices are defining room edges
+# Room coordinates
 rooms_coordinates = {
     "Lounge": [(0,25),(6,25),(6,24),(7,24),(7,19),(0,19)],
     "Hall": [(9,25),(15,25),(15,18),(9,18)],
@@ -66,20 +66,20 @@ rooms_coordinates = {
     "Center": [(10,17),(15,17),(15,10),(10,10)]
 }
 
-# Door positions, coordinates of tile inside doorway
+# Door positions
 doors = [
     (6,19),(11,18),(12,18),(14,20),(17,21),(17,16),
     (20,14),(6,15),(7,12),(22,12),(18,9),
     (4,6),(8,5),(9,7),(14,7),(15,5),(18,4)
 ]
 
-# Secret Passage positions, coodinates are 1 tile ahead of doorway within room
+# Secret Passage positions
 secret = [(4,5),(18,3),(17,22),(6,20)]
 
 # Starting position tiles
 starting_positions = [(9,0),(14,0),(23,6),(23,19),(7,24),(0,17)]
 
-# Wall positions, maps row: column that is a boundary on that row
+# Outside wall positions
 game_walls = {0:[0,1,2,3,4,5,6,7,8,15,16,17,18,19,20,21,22,23],
               1:[6,17],
               5:[23],
@@ -96,8 +96,8 @@ game_walls = {0:[0,1,2,3,4,5,6,7,8,15,16,17,18,19,20,21,22,23],
 
 # Secret passage connections room to room
 secret_passages = {
-    10: 7, 7: 10,     # Study <-> Kitchen
-    4: 9, 9: 4        # Conservatory <-> Lounge
+    10: 7, 7: 10,
+    4: 9, 9: 4
 }
 
 # Player starting positions NEED TO RANDOMIZE
@@ -122,7 +122,4 @@ def get_solution():
     }
 
 def get_all_cards():
-    """
-    Function to return all possible 21 cards in the deck
-    """
     return list(rooms.keys()) + list(players.keys()) + list(weapons.keys())

@@ -11,11 +11,9 @@ class CluedoGame:
         self.eliminated = []
         self.game_won = False
         self.winner = None
-        
-        # Tracking character and weapon positions
         self.character_positions = {}
         self.weapon_positions = {}
-        
+
         for player_name, player_state in player_states.items():
             self.character_positions[player_name] = player_state.current_position
     
@@ -36,11 +34,14 @@ class CluedoGame:
         return [player for player in self.player_names if not player_states.get(player).eliminated]
         
     def make_suggestion(self, player_states, player, person_name, weapon_name, room_name):
+        """
+        Function for making suggestion based on player, weapon, room name
+        """
         person_id = None
         weapon_id = None
         room_id = None
         
-        # Find card IDs
+        # Finding person, weapon, room ids based on names
         for pid, pname in players.items():
             if pname.lower() == person_name.lower():
                 person_id = pid
@@ -61,7 +62,7 @@ class CluedoGame:
         suggestion = [person_id, weapon_id, room_id]
         print(f"Suggestion: {[person_name, weapon_name, room_name]}")
 
-        # Check players in clockwise order starting from the next player
+        # Clockwise order, checking to see if anyone has a card in hand
         player_index = self.player_names.index(player)
         players_who_couldnt_refute = []
 
@@ -82,28 +83,27 @@ class CluedoGame:
                 
                 print(f"{other_player} shows {shown_card_name} card")
                 
-                # Update AI knowledge for all AI players
+                # Updating AI knowledge
                 for ai_player_name, ai_player_state in player_states.items():
                     if ai_player_state.is_ai:
-                        if ai_player_name == player:
-                            # The AI made the suggestion and saw the card
-                            ai_player_state.update_AI_on_cards_shown(other_player, shown_card)
-                        else:
-                            # The AI observed that someone could refute but didn't see the card
-                            # Remove the suggestion from their knowledge with some probability
-                            pass
+                        # Someone showed AI a card
+                        ai_player_state.update_AI_on_cards_shown(other_player, shown_card)
                 
-                # Remove from suggesting player's knowledge
-                if shown_card in player_states.get(player).knowledge:
-                    player_states.get(player).knowledge.remove(shown_card)
-
+                        # Someone did not show AI a card, still uncertain
+                        if players_who_couldnt_refute:
+                            ai_player_state.update_AI_on_refutations(suggestion, players_who_couldnt_refute)
+                
+                # Removing shown card from possible solutions
+                suggesting_player_state = player_states.get(player)
+                if hasattr(suggesting_player_state, 'knowledge') and shown_card in suggesting_player_state.knowledge:
+                    suggesting_player_state.knowledge.remove(shown_card)
+                
                 return shown_card
             else:
                 players_who_couldnt_refute.append(other_player)
         
         print("No one shows any card")
         
-        # Update AI knowledge - no one had any of these cards
         for ai_player_name, ai_player_state in player_states.items():
             if ai_player_state.is_ai:
                 ai_player_state.update_AI_on_refutations(suggestion, players_who_couldnt_refute)
@@ -147,11 +147,13 @@ class CluedoGame:
         return None
     
     def make_suggestion_in_room(self, player_states, player_name, room_id):
+        """
+        Function to make a suggestion when inside a room
+        """
         room_name = rooms[room_id]
         player_state = player_states.get(player_name)
                 
         if player_state.is_ai:
-            # AI makes suggestion
             suggestion = player_state.make_ai_suggestion(room_id)
             if suggestion:
                 character_id, weapon_id, room_id = suggestion
@@ -159,14 +161,10 @@ class CluedoGame:
                 weapon_name = weapons[weapon_id]
                 shown_card = self.make_suggestion(player_states, player_name, character_name, weapon_name, room_name)
         else:
-            # Human player makes suggestion
             make_suggestion = input("Suggestion (yes/no): ").lower().strip()
             if make_suggestion == "yes":
-                available_players = list(players.values())
-                available_weapons = list(weapons.values())
-                
-                print("Available characters: ", available_players)
-                print("Available weapons: ", available_weapons)
+                available_cards = player_state.knowledge
+                print("Available cards: ", available_cards)
                 
                 character_name = input("Suggest a character: ").strip()
                 weapon_name = input("Suggest a weapon: ").strip()
@@ -178,10 +176,12 @@ class CluedoGame:
                     print("Could not find matching cards")
     
     def ask_for_accusation(self, player_states, player_name):
+        """
+        Ask if player wants to make an accusation on any turn
+        """
         player_state = player_states.get(player_name)
         
         if player_state.is_ai:
-            # AI decides whether to make accusation
             should_accuse, accusation = player_state.should_make_accusation()
             if should_accuse:
                 character_id, weapon_id, room_id = accusation
@@ -191,18 +191,10 @@ class CluedoGame:
                 return self.make_accusation(player_states, player_name, character_name, weapon_name, room_name_acc)
             return False
         else:
-            # Human player decides
             accuse = input("Accusation (yes/no): ").lower().strip()
-            
             if accuse == "yes":
-                available_players = list(players.values())
-                available_weapons = list(weapons.values())
-                available_rooms = list(rooms.values())
-                
-                print("Available characters: ", available_players)
-                print("Available weapons: ", available_weapons)
-                print("Available rooms: ", available_rooms)
-                
+                available_cards = player_state.knowledge
+                print("Available cards: ", available_cards)
                 character = input("Accuse a character: ").strip()
                 weapon = input("Accuse a weapon: ").strip()
                 room = input("Accuse a room: ").strip()
@@ -212,6 +204,9 @@ class CluedoGame:
             return False
     
     def make_accusation(self, player_states, player, person_name, weapon_name, room_name):
+        """
+        Making accusation for person, weapon, room
+        """
         person_id = None
         weapon_id = None
         room_id = None
@@ -232,7 +227,6 @@ class CluedoGame:
         if not all([person_id, weapon_id, room_id]):
             print("Could not find matching cards")
             return False
-        
         print(f"Accusation: {[person_name, weapon_name, room_name]}")
 
         accusation_correct = (person_id == self.solution['player'] and 
@@ -253,14 +247,18 @@ class CluedoGame:
             return False
     
     def is_game_over(self, player_states):
-        """End game"""
+        """
+        Checking if game is over based on winner, number of players remaining
+        """
         if self.game_won:
             return True
         active_players = self.get_active_players(player_states)
         return len(active_players) <= 1
     
     def get_winner(self, player_states):
-        """Winner"""
+        """
+        Retrieving winner for CLI purposes
+        """
         if self.winner:
             return self.winner
         active_players = self.get_active_players(player_states)
@@ -269,21 +267,25 @@ class CluedoGame:
         return None
     
     def get_solution_string(self):
+        """
+        Retrieving solution for CLI purposes
+        """
         room_name = rooms.get(self.solution['room'], 'Unknown Room')
         player_name = players.get(self.solution['player'], 'Unknown Player')
         weapon_name = weapons.get(self.solution['weapon'], 'Unknown Weapon')
         return f"{player_name} in the {room_name} with the {weapon_name}"
     
     def move_player(self, player_states, player_name, steps, board):
+        """
+        Moving player for each turn
+        """
         current_pos = player_states.get(player_name).current_position
         
         if player_states.get(player_name).is_ai:
-            # AI movement - simplified random valid movement
             new_pos = self.ai_move(current_pos, steps, board)
             player_states.get(player_name).current_position = new_pos
             print(f"{player_name} moves to {new_pos}")
         else:
-            # Human movement
             print("Available directions (UP, DOWN, LEFT, RIGHT): ")
             new_pos = current_pos
             remaining_steps = steps
@@ -296,7 +298,6 @@ class CluedoGame:
                 if direction not in ["UP", "DOWN", "LEFT", "RIGHT"]:
                     print("Invalid direction.")
                     continue
-                
                 y, x = new_pos
                 if direction == "UP":
                     test_pos = (y - 1, x)
@@ -315,14 +316,16 @@ class CluedoGame:
                     print("Invalid location, structure in the way")
             
             player_states.get(player_name).current_position = new_pos
-        
         current_room = self.get_current_room(new_pos, board)
         return True, current_room
     
     def ai_move(self, current_pos, steps, board):
-        """Simple AI movement - try to enter a room"""
+        """
+        AI random movement. Will enter a room when it has the chance.
+        Have to update to avoid infinite loops.
+        """
         new_pos = current_pos
-        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # right, left, down, up
+        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         
         for _ in range(steps):
             random.shuffle(directions)
@@ -332,16 +335,19 @@ class CluedoGame:
                 if self.is_valid_position(test_pos, board):
                     new_pos = test_pos
                     moved = True
-                    # If we found a room, stop moving
                     if self.get_current_room(new_pos, board):
                         break
                     break
             if not moved:
                 break
-        
+
         return new_pos
     
     def is_valid_position(self, pos, board):
+        """
+        Checking if position to move to is valid depending on board value.
+        Need to fix room walls to be -1 instead of part of room.
+        """
         y, x = pos
         if y < 0 or y >= board.shape[0] or x < 0 or x >= board.shape[1]:
             return False

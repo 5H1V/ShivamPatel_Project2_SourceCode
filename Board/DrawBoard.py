@@ -8,7 +8,7 @@ def position_matrix(board, player_positions=None):
     """
     board_height, board_width = board.shape
     
-    # Adding room locations to board matrix
+    # Adding room locations
     for name, coordinates in rooms_coordinates.items():
         poly_path = Path(coordinates)
         for y in range(board_height):
@@ -17,24 +17,19 @@ def position_matrix(board, player_positions=None):
                     if name in board_labels:
                         board[y, x] = board_labels[name]
 
-    # Adding door locations to board matrix
     for x, y in doors:
         if 0 <= y < board_height and 0 <= x < board_width:
             board[y, x] = board_labels["Door"]
 
-    # Adding secret passage locations to board matrix.
-    # Made location 1 tile ahead of doorway
     for x, y in secret:
         if 0 <= y < board_height and 0 <= x < board_width:
             board[y, x] = board_labels["Secret"]
 
-    # Adding player positions to board matrix NEED TO CHECK HOW TO UPDATE PLAYER POSITIONS
     if not player_positions:
         for x, y in starting_positions:
             if 0 <= y < board_height and 0 <= x < board_width:
                 board[y, x] = board_labels["Occupied"]
 
-    # Adding game walls to board matrix
     for row, cols in game_walls.items():
         if 0 <= row < board_height:
             for col in cols:

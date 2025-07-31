@@ -16,12 +16,11 @@ class Player:
         
         # Tracking AI knowledge
         if is_ai:
-            self.player_cards = {}      # Track KNOWN human players' cards
-            self.player_no_cards = {}   # Track UNKNOWN human players' cards
-            self.suggestions_made = []  # Track suggestions AI made
+            self.player_cards = {}
+            self.player_no_cards = {}
+            self.suggestions_made = []
             self.refutations_seen = []
             
-            # Initializing knowledge about other players
             for player_name in players.values():
                 if player_name != name:
                     self.player_cards[player_name] = set()
@@ -73,7 +72,6 @@ class Player:
         
         return character, weapon, current_room_id
 
-#------------------------------------------------
     def should_make_accusation(self):
         """
         Deciding if AI should make an accusation based on number cards left per category
@@ -92,9 +90,6 @@ class Player:
         return False, None
         
     def get_card_name(self, card_id):
-        """
-        Finding card names based on card id #
-        """
         if card_id in rooms:
             return rooms[card_id]
         elif card_id in players:
@@ -104,7 +99,4 @@ class Player:
         return f"Unknown card {card_id}"
     
     def get_player_hand_names(self):
-        """
-        Retrieving all card names in a card hand
-        """
         return [self.get_card_name(card) for card in self.card_hand]
