@@ -1,7 +1,7 @@
 import random
 import numpy as np
 from game_config import board_labels, rooms, players, get_solution
-from board.DrawBoard import print_board, position_matrix
+from board.position_matrix import position_matrix
 from logic.card_dealing import deal_cards
 from logic.player_state import Player
 from logic.game_state import CluedoGame
