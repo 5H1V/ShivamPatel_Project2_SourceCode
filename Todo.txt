@@ -1,4 +1,3 @@
-Change command line interface lines
 Change description of methods
 Document code
 Write Summary
@@ -19,15 +18,6 @@ PHASE 2 - CLEANING UP CODE
 - 
 - 
 
-PHASE 1 - CLEANING COMMAND LINE INTERFACE
-- 
-- 
-
-
-PHASE 0.5 - COMMENTING CODE
-- 
-- 
-
-PHASE 0 - NEEDS TO BE CHECKED
+PHASE 1 - COMMENTING CODE
 - logic.game_state.py
 - main.py

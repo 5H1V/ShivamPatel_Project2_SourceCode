@@ -55,16 +55,16 @@ class CluedoGame:
                 break
         
         if not all([person_id, weapon_id, room_id]):
-            print("Invalid suggestion - couldn't find matching cards")
+            print("Could not find matching cards")
             return None
         
         suggestion = [person_id, weapon_id, room_id]
-        print(f"\n{player} suggests it was {person_name} in the {room_name} with the {weapon_name}")
-                
+        print(f"Suggestion: {[person_name, weapon_name, room_name]}")
+
         # Check players in clockwise order starting from the next player
         player_index = self.player_names.index(player)
         players_who_couldnt_refute = []
-        
+
         for i in range(1, len(self.player_names)):
             other_index = (player_index + i) % len(self.player_names)
             other_player = self.player_names[other_index]
@@ -80,7 +80,7 @@ class CluedoGame:
                 shown_card = random.choice(matching_cards)
                 shown_card_name = self.get_card_name(shown_card)
                 
-                print(f"{other_player} shows the {shown_card_name} card to {player}.")
+                print(f"{other_player} shows {shown_card_name} card")
                 
                 # Update AI knowledge for all AI players
                 for ai_player_name, ai_player_state in player_states.items():
@@ -101,7 +101,7 @@ class CluedoGame:
             else:
                 players_who_couldnt_refute.append(other_player)
         
-        print("No one could disprove the suggestion.")
+        print("No one shows any card")
         
         # Update AI knowledge - no one had any of these cards
         for ai_player_name, ai_player_state in player_states.items():
@@ -149,9 +149,7 @@ class CluedoGame:
     def make_suggestion_in_room(self, player_states, player_name, room_id):
         room_name = rooms[room_id]
         player_state = player_states.get(player_name)
-        
-        print(f"\n{player_name}, you are in the {room_name}.")
-        
+                
         if player_state.is_ai:
             # AI makes suggestion
             suggestion = player_state.make_ai_suggestion(room_id)
@@ -162,22 +160,22 @@ class CluedoGame:
                 shown_card = self.make_suggestion(player_states, player_name, character_name, weapon_name, room_name)
         else:
             # Human player makes suggestion
-            make_suggestion = input("Do you want to make a suggestion? (yes/no): ").lower().strip()
+            make_suggestion = input("Suggestion (yes/no): ").lower().strip()
             if make_suggestion == "yes":
                 available_players = list(players.values())
                 available_weapons = list(weapons.values())
                 
-                print("Available characters:", available_players)
-                print("Available weapons:", available_weapons)
+                print("Available characters: ", available_players)
+                print("Available weapons: ", available_weapons)
                 
                 character_name = input("Suggest a character: ").strip()
                 weapon_name = input("Suggest a weapon: ").strip()
                 
                 shown_card = self.make_suggestion(player_states, player_name, character_name, weapon_name, room_name)
                 if shown_card:
-                    print(f"Your suggestion was disproven.")
+                    print(f"Your suggestion was incorrect.")
                 else:
-                    print("Nobody could disprove your suggestion!")
+                    print("Could not find matching cards")
     
     def ask_for_accusation(self, player_states, player_name):
         player_state = player_states.get(player_name)
@@ -194,16 +192,16 @@ class CluedoGame:
             return False
         else:
             # Human player decides
-            accuse = input("Do you want to make an accusation? (yes/no): ").lower().strip()
+            accuse = input("Accusation (yes/no): ").lower().strip()
             
             if accuse == "yes":
                 available_players = list(players.values())
                 available_weapons = list(weapons.values())
                 available_rooms = list(rooms.values())
                 
-                print("Available characters:", available_players)
-                print("Available weapons:", available_weapons)
-                print("Available rooms:", available_rooms)
+                print("Available characters: ", available_players)
+                print("Available weapons: ", available_weapons)
+                print("Available rooms: ", available_rooms)
                 
                 character = input("Accuse a character: ").strip()
                 weapon = input("Accuse a weapon: ").strip()
@@ -232,24 +230,24 @@ class CluedoGame:
                 break
         
         if not all([person_id, weapon_id, room_id]):
-            print("Invalid accusation - couldn't find matching cards")
+            print("Could not find matching cards")
             return False
         
-        print(f"\n{player} accuses {person_name} in the {room_name} with the {weapon_name}!")
-        
+        print(f"Accusation: {[person_name, weapon_name, room_name]}")
+
         accusation_correct = (person_id == self.solution['player'] and 
                             weapon_id == self.solution['weapon'] and 
                             room_id == self.solution['room'])
         
         if accusation_correct:
-            print(f"{player} wins the game!")
+            print(f"{player} wins!")
             player_states.get(player).game_won = True
             player_states.get(player).winner = True
             self.game_won = True
             self.winner = player
             return True
         else:
-            print(f"{player}'s accusation was incorrect and is eliminated from making accusations.")
+            print(f"{player} was wrong and is eliminated")
             player_states.get(player).eliminated = True
             self.eliminated.append(player)
             return False
@@ -278,8 +276,6 @@ class CluedoGame:
     
     def move_player(self, player_states, player_name, steps, board):
         current_pos = player_states.get(player_name).current_position
-        print(f"Current position: {current_pos}")
-        print(f"You have {steps} steps to move.")
         
         if player_states.get(player_name).is_ai:
             # AI movement - simplified random valid movement
@@ -288,17 +284,17 @@ class CluedoGame:
             print(f"{player_name} moves to {new_pos}")
         else:
             # Human movement
-            print("Available directions: UP, DOWN, LEFT, RIGHT")
+            print("Available directions (UP, DOWN, LEFT, RIGHT): ")
             new_pos = current_pos
             remaining_steps = steps
             
             while remaining_steps > 0:
                 print(f"Remaining steps: {remaining_steps}")
-                direction = input("Enter direction (UP/DOWN/LEFT/RIGHT) or DONE to stop: ").upper()
+                direction = input("Enter direction (UP/DOWN/LEFT/RIGHT) or DONE to exit: ").upper()
                 if direction == "DONE":
                     break
                 if direction not in ["UP", "DOWN", "LEFT", "RIGHT"]:
-                    print("Invalid direction. Please enter UP, DOWN, LEFT, or RIGHT.")
+                    print("Invalid direction.")
                     continue
                 
                 y, x = new_pos
@@ -316,7 +312,7 @@ class CluedoGame:
                     remaining_steps -= 1
                     print(f"Moved to {new_pos}")
                 else:
-                    print("Can't move there - blocked by wall or out of bounds.")
+                    print("Invalid location, structure in the way")
             
             player_states.get(player_name).current_position = new_pos
         
@@ -351,15 +347,3 @@ class CluedoGame:
             return False
         cell_value = board[y, x]
         return cell_value != board_labels["Invalid"]
-    
-    def print_game_state(self, player_states):
-        """Print current game state for debugging"""
-        print(f"\n=== GAME STATE ===")
-        print(f"Current player: {self.get_current_player()}")
-        print(f"Active players: {self.get_active_players(player_states)}")
-        print(f"Eliminated players: {[player for player in player_states if player_states.get(player).eliminated]}")
-        print(f"Game over: {self.is_game_over(player_states)}")
-        if self.is_game_over(player_states):
-            print(f"Winner: {self.get_winner(player_states)}")
-        print(f"Solution: {self.get_solution_string()}")
-        print("==================\n")
