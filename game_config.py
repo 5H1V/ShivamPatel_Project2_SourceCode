@@ -1,6 +1,6 @@
 import random
 
-#Mapping for character, color
+# Mapping for character, color
 player_colors = {
     "Miss Scarlett": "red",
     "Colonel Mustard": "orange", 
@@ -10,7 +10,7 @@ player_colors = {
     "Professor Plum": "purple"
 }
 
-#Mappings for id, room for shuffle purposes
+# Mappings for id, room for shuffle purposes
 rooms = {
     2: "Ballroom",
     3: "Billiard Room",
@@ -21,9 +21,9 @@ rooms = {
     8: "Library",
     9: "Lounge",
     10: "Study"
-    }
+}
 
-#Mappings for id, character for shuffle purposes
+# Mappings for id, character for shuffle purposes
 players = {
     11: "Miss Scarlett",
     12: "Colonel Mustard",
@@ -31,9 +31,9 @@ players = {
     14: "Reverend Green",
     15: "Mrs. Peacock",
     16: "Professor Plum"
-    }
+}
 
-#Mappings for id, weapon for shuffle purposes
+# Mappings for id, weapon for shuffle purposes
 weapons = {
     17: "Candlestick",
     18: "Dagger",
@@ -41,9 +41,9 @@ weapons = {
     20: "Revolver", 
     21: "Rope",
     22: "Wrench"
-    }
+}
 
-#Mappings for tile, status for coloring purposes
+# Mappings for tile, status for coloring purposes
 board_labels = {
     "Invalid": -1,
     "Empty": 0,
@@ -60,9 +60,9 @@ board_labels = {
     "Center": 11,
     "Door": 12,
     "Secret": 13
-    }
+}
 
-#Room coordinates (vertices are defining room edges)
+# Room coordinates (vertices are defining room edges)
 rooms_coordinates = {
     "Lounge": [(0,25),(6,25),(6,24),(7,24),(7,19),(0,19)],
     "Hall": [(9,25),(15,25),(15,18),(9,18)],
@@ -74,8 +74,9 @@ rooms_coordinates = {
     "Ballroom": [(8,8),(16,8),(16,2),(14,2),(14,0),(10,0),(10,2),(8,2)],
     "Conservatory": [(19,6),(23,6),(23,5),(24,5),(24,1),(18,1),(18,5),(19,5)],
     "Center": [(10,17),(15,17),(15,10),(10,10)]
-    }
-#Center of room for labelling
+}
+
+# Center of room for labelling
 room_centers = {
     2: (12, 4),     # Ballroom
     3: (21, 11),   # Billiard Room  
@@ -88,20 +89,20 @@ room_centers = {
     10: (21, 23)   # Study
 }
 
-#Door positions (coordinates of tile inside doorway)
+# Door positions (coordinates of tile inside doorway)
 doors = [
     (6,19),(11,18),(12,18),(14,20),(17,21),(17,16),
     (20,14),(6,15),(7,12),(22,12),(18,9),
     (4,6),(8,5),(9,7),(14,7),(15,5),(18,4)
-    ]
+]
 
-#Secret Passage positions (coordinates of tile 1 tile straight of doorway in room)
+# Secret Passage positions (coordinates of tile 1 tile straight of doorway in room)
 secret = [(4,5),(18,3),(17,22),(6,20)]
 
-#Starting positions (coordinates of tile)
+# Starting positions (coordinates of tile)
 starting_positions = [(9,0),(14,0),(23,6),(23,19),(7,24),(0,17)]
 
-#Wall positions (showing row, outside wall boundary)
+# Wall positions (showing row, outside wall boundary)
 game_walls = {0:[0,1,2,3,4,5,6,7,8,15,16,17,18,19,20,21,22,23],
               1:[6,17],
               5:[23],
@@ -114,40 +115,39 @@ game_walls = {0:[0,1,2,3,4,5,6,7,8,15,16,17,18,19,20,21,22,23],
               18:[0,23],
               20:[23],
               24:[6,8,15,17]
-              }
+}
 
-#Secret passage room connections
+# Secret passage room connections
 secret_passages = {
-    10:7, 7:10,     #Study to Kitchen and vice versa
-    4:9, 9:4        #Conservatory to Lounge and vice cersa
-    }
+    10: 7, 7: 10,     # Study to Kitchen and vice versa
+    4: 9, 9: 4        # Conservatory to Lounge and vice versa
+}
 
-solution = {
-    'room': random.choice(list(rooms.keys())),
-    'player': random.choice(list(players.keys())),
-    'weapon': random.choice(list(weapons.keys()))
-    }
-
-#TEMPORARY Player starting positions
-"""Need to randomize starting positions"""
+# Player starting positions
 player_start_positions = {
-    "Miss Scarlett": (24,7),
-    "Colonel Mustard": (17,0),
-    "Mrs. White": (19,23),
-    "Reverend Green": (6,23),
-    "Mrs. Peacock": (0,9),
-    "Professor Plum": (0,14)
-    }
+    "Miss Scarlett": (24, 7),
+    "Colonel Mustard": (17, 0),
+    "Mrs. White": (19, 23),
+    "Reverend Green": (6, 23),
+    "Mrs. Peacock": (0, 9),
+    "Professor Plum": (0, 14)
+}
 
 valid_rooms = list(rooms.values())
 valid_players = list(players.values()) 
 valid_weapons = list(weapons.values())
 
+def get_solution():
+    """Generate random solution"""
+    return {
+        'room': random.choice(list(rooms.keys())),
+        'player': random.choice(list(players.keys())),
+        'weapon': random.choice(list(weapons.keys()))
+    }
+
 def get_all_cards():
     """All 21 cards"""
     return list(rooms.keys()) + list(players.keys()) + list(weapons.keys())
-
-#----------------------------------------------------
 
 def get_card_name(card_id):
     """Find the card based on card id"""
