@@ -60,8 +60,7 @@ class CluedoGame:
             return None
         
         suggestion = [person_id, weapon_id, room_id]
-        print(f"Suggestion: {[person_name, weapon_name, room_name]}")
-
+        print(f"I suggest it was {person_name}, with the {weapon_name}, in the {room_name}")
         # Clockwise order, checking to see if anyone has a card in hand
         player_index = self.player_names.index(player)
         players_who_couldnt_refute = []
@@ -82,7 +81,7 @@ class CluedoGame:
                 shown_card_name = self.get_card_name(shown_card)
                 
                 print(f"{other_player} shows {shown_card_name} card")
-                
+
                 # Updating AI knowledge
                 for ai_player_name, ai_player_state in player_states.items():
                     if ai_player_state.is_ai:
@@ -165,10 +164,8 @@ class CluedoGame:
             if make_suggestion == "yes":
                 available_cards = player_state.knowledge
                 print("Available cards: ", available_cards)
-                
                 character_name = input("Suggest a character: ").strip()
                 weapon_name = input("Suggest a weapon: ").strip()
-                
                 shown_card = self.make_suggestion(player_states, player_name, character_name, weapon_name, room_name)
                 if shown_card:
                     print(f"Your suggestion was incorrect.")
@@ -198,7 +195,7 @@ class CluedoGame:
                 character = input("Accuse a character: ").strip()
                 weapon = input("Accuse a weapon: ").strip()
                 room = input("Accuse a room: ").strip()
-                
+
                 return self.make_accusation(player_states, player_name, character, weapon, room)
             
             return False
@@ -286,13 +283,13 @@ class CluedoGame:
             player_states.get(player_name).current_position = new_pos
             print(f"{player_name} moves to {new_pos}")
         else:
-            print("Available directions (UP, DOWN, LEFT, RIGHT): ")
             new_pos = current_pos
             remaining_steps = steps
             
             while remaining_steps > 0:
                 print(f"Remaining steps: {remaining_steps}")
-                direction = input("Enter direction (UP/DOWN/LEFT/RIGHT) or DONE to exit: ").upper()
+                direction = input("Enter your move (e.g., UP, DOWN, LEFT, RIGHT) or DONE to exit: ").upper()
+
                 if direction == "DONE":
                     break
                 if direction not in ["UP", "DOWN", "LEFT", "RIGHT"]:
@@ -314,7 +311,7 @@ class CluedoGame:
                     print(f"Moved to {new_pos}")
                 else:
                     print("Invalid location, structure in the way")
-            
+
             player_states.get(player_name).current_position = new_pos
         current_room = self.get_current_room(new_pos, board)
         return True, current_room

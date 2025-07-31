@@ -1,13 +1,13 @@
 import random
 import numpy as np
-from game_config import board_labels, rooms, players, weapons, player_start_positions, get_solution
+from game_config import board_labels, rooms, players, get_solution
 from board.DrawBoard import print_board, position_matrix
 from logic.card_dealing import deal_cards
 from logic.player_state import Player
 from logic.game_state import CluedoGame
 
 def main():
-    print("Cluedo Game\n")
+    print("\nCluedo Game")
     
     board = np.full((25, 25), board_labels["Empty"], dtype=int)
     board = position_matrix(board)
@@ -83,11 +83,11 @@ def play_human_turn(game, player_states, player_name, board):
                     return
     
     # Rolling Dice
-    input("Press Enter to roll the dice")
+    input(f"{player_name}, press Enter to roll dice")
     roll = random.randint(1, 6)
-    print(f"{player_name} rolled a {roll}")
+    print(f"{player_name}, your roll is {roll}")
     success, new_room = game.move_player(player_states, player_name, roll, board)
-    
+
     if success and new_room:
         room_name = rooms[new_room]
         print(f"{player_name} entered the {room_name}")
@@ -118,8 +118,9 @@ def play_ai_turn(game, player_states, player_name, board):
                     game.make_suggestion_in_room(player_states, player_name, new_room)
                     return
     # Rolling dice
+
     roll = random.randint(1, 6)
-    print(f"{player_name} rolled a {roll}")
+    print(f"{player_name}, your roll is {roll}")
     success, new_room = game.move_player(player_states, player_name, roll, board)
     if success and new_room:
         room_name = rooms[new_room]
