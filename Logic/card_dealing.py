@@ -1,39 +1,27 @@
 import random
-from game_config import rooms, players, weapons, get_all_cards
+from game_config import get_all_cards
 
 def deal_cards(player_names, solution_cards):
-    """Deal cards to players, excluding the solution cards"""
-    # Full deck
+    """
+    Handing out cards to players from the deck without the solution cards
+    """
+    # All cards, including solution cards
     all_cards = get_all_cards()
     
-    # Remove solution cards from deck
+    # Cards available to hand out, excluding solution cards
     remaining_cards = [card for card in all_cards if card not in solution_cards]
     
-    # Shuffle the remaining cards
+    # Shuffling deck
     random.shuffle(remaining_cards)
     
-    # Initialize hands
+    # Creating dictionary for player and their respective cards
     card_hands = {player: [] for player in player_names}
 
-    # Deal cards evenly
+    # Dealing out cards, making sure they are all distributed with some players having more than others
     current_player = 0
     for card in remaining_cards:
         player_name = player_names[current_player]
         card_hands[player_name].append(card)
         current_player = (current_player + 1) % len(player_names)
-    
-    # Print hands for debugging (remove)
-    print("\n=== CARD DISTRIBUTION ===")
-    for player, cards in card_hands.items():
-        card_names = []
-        for card in cards:
-            if card in rooms:
-                card_names.append(f"Room: {rooms[card]}")
-            elif card in players:
-                card_names.append(f"Player: {players[card]}")
-            elif card in weapons:
-                card_names.append(f"Weapon: {weapons[card]}")
-        print(f"{player}: {card_names}")
-    print("========================\n")
     
     return card_hands

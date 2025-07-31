@@ -1,5 +1,5 @@
 import random
-from game_config import rooms, players, weapons, secret_passages, valid_players, valid_rooms, valid_weapons, board_labels
+from game_config import rooms, players, weapons, secret_passages, board_labels
 
 class CluedoGame:
     def __init__(self, player_states, board, solution):
@@ -12,11 +12,10 @@ class CluedoGame:
         self.game_won = False
         self.winner = None
         
-        # Track character and weapon positions
+        # Tracking character and weapon positions
         self.character_positions = {}
         self.weapon_positions = {}
         
-        # Initialize character positions
         for player_name, player_state in player_states.items():
             self.character_positions[player_name] = player_state.current_position
     
@@ -35,21 +34,7 @@ class CluedoGame:
     
     def get_active_players(self, player_states):
         return [player for player in self.player_names if not player_states.get(player).eliminated]
-    
-    def move_character_to_room(self, character_name, room_id, board):
-        """Move character token to specified room"""
-        room_position = self.find_room_position(room_id, board)
-        if room_position:
-            self.character_positions[character_name] = room_position
-            print(f"{character_name} is moved to the {rooms[room_id]}")
-    
-    def move_weapon_to_room(self, weapon_name, room_id, board):
-        """Move weapon token to specified room"""
-        room_position = self.find_room_position(room_id, board)
-        if room_position:
-            self.weapon_positions[weapon_name] = room_position
-            print(f"{weapon_name} is moved to the {rooms[room_id]}")
-    
+        
     def make_suggestion(self, player_states, player, person_name, weapon_name, room_name):
         person_id = None
         weapon_id = None
@@ -74,12 +59,8 @@ class CluedoGame:
             return None
         
         suggestion = [person_id, weapon_id, room_id]
-        print(f"\n{player} suggests it was {person_name} in the {room_name} with the {weapon_name}.")
-        
-        # Move character and weapon tokens to the room
-        self.move_character_to_room(person_name, room_id, self.board)
-        self.move_weapon_to_room(weapon_name, room_id, self.board)
-        
+        print(f"\n{player} suggests it was {person_name} in the {room_name} with the {weapon_name}")
+                
         # Check players in clockwise order starting from the next player
         player_index = self.player_names.index(player)
         players_who_couldnt_refute = []
@@ -96,28 +77,9 @@ class CluedoGame:
             matching_cards = [card for card in suggestion if card in hand]
             
             if matching_cards:
-                # Player can refute - choose which card to show
-                if player_states.get(other_player).is_ai:
-                    shown_card = random.choice(matching_cards)
-                else:
-                    if len(matching_cards) == 1:
-                        shown_card = matching_cards[0]
-                    else:
-                        print(f"\n{other_player}, you can refute with: {[self.get_card_name(c) for c in matching_cards]}")
-                        while True:
-                            try:
-                                choice = input("Choose a card to show (enter the card name): ").strip()
-                                for card in matching_cards:
-                                    if self.get_card_name(card).lower() == choice.lower():
-                                        shown_card = card
-                                        break
-                                if 'shown_card' in locals():
-                                    break
-                                print("Invalid choice. Please try again.")
-                            except:
-                                print("Invalid input. Please try again.")
-                
+                shown_card = random.choice(matching_cards)
                 shown_card_name = self.get_card_name(shown_card)
+                
                 print(f"{other_player} shows the {shown_card_name} card to {player}.")
                 
                 # Update AI knowledge for all AI players
@@ -125,7 +87,7 @@ class CluedoGame:
                     if ai_player_state.is_ai:
                         if ai_player_name == player:
                             # The AI made the suggestion and saw the card
-                            ai_player_state.update_ai_knowledge_card_shown(other_player, shown_card)
+                            ai_player_state.update_AI_on_cards_shown(other_player, shown_card)
                         else:
                             # The AI observed that someone could refute but didn't see the card
                             # Remove the suggestion from their knowledge with some probability
@@ -134,7 +96,7 @@ class CluedoGame:
                 # Remove from suggesting player's knowledge
                 if shown_card in player_states.get(player).knowledge:
                     player_states.get(player).knowledge.remove(shown_card)
-                
+
                 return shown_card
             else:
                 players_who_couldnt_refute.append(other_player)
@@ -144,7 +106,7 @@ class CluedoGame:
         # Update AI knowledge - no one had any of these cards
         for ai_player_name, ai_player_state in player_states.items():
             if ai_player_state.is_ai:
-                ai_player_state.update_ai_knowledge_no_refutation(suggestion, players_who_couldnt_refute)
+                ai_player_state.update_AI_on_refutations(suggestion, players_who_couldnt_refute)
         
         return None
     
