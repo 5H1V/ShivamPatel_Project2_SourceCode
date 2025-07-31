@@ -1,5 +1,5 @@
 import random
-from game_config import rooms, players, weapons, secret_passages, board_labels
+from game_config import doors, rooms, players, weapons, secret_passages, board_labels
 
 class CluedoGame:
     def __init__(self, player_states, board, solution):
@@ -124,6 +124,16 @@ class CluedoGame:
             cell_value = board[y, x]
             if cell_value in rooms:
                 return cell_value
+            elif (x,y) in doors:
+                if board[y+1, x] in rooms:
+                    return board[y+1, x]
+                elif board[y, x+1] in rooms:
+                    return board[y, x+1]                    
+                elif board[y-1, x] in rooms:
+                    return board[y-1, x]                    
+                elif board[y, x-1] in rooms:
+                    return board[y, x-1]                    
+            
         return None
     
     def can_use_secret_passage(self, room_id):
@@ -162,7 +172,8 @@ class CluedoGame:
         else:
             make_suggestion = input("Suggestion (yes/no): ").lower().strip()
             if make_suggestion == "yes":
-                available_cards = player_state.knowledge
+                available = player_state.knowledge
+                available_cards = [players[i] for i in available if i in players] + [weapons[i] for i in available if i in weapons] + [rooms[i] for i in available if i in rooms]
                 print("Available cards: ", available_cards)
                 character_name = input("Suggest a character: ").strip()
                 weapon_name = input("Suggest a weapon: ").strip()
@@ -190,11 +201,13 @@ class CluedoGame:
         else:
             accuse = input("Accusation (yes/no): ").lower().strip()
             if accuse == "yes":
-                available_cards = player_state.knowledge
+                available = player_state.knowledge
+                available_cards = [players[i] for i in available if i in players] + [weapons[i] for i in available if i in weapons] + [rooms[i] for i in available if i in rooms]
                 print("Available cards: ", available_cards)
                 character = input("Accuse a character: ").strip()
                 weapon = input("Accuse a weapon: ").strip()
                 room = input("Accuse a room: ").strip()
+                
 
                 return self.make_accusation(player_states, player_name, character, weapon, room)
             
@@ -349,4 +362,4 @@ class CluedoGame:
         if y < 0 or y >= board.shape[0] or x < 0 or x >= board.shape[1]:
             return False
         cell_value = board[y, x]
-        return cell_value != board_labels["Invalid"]
+        return cell_value in [board_labels["Empty"], board_labels["Door"]]
