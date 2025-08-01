@@ -132,7 +132,7 @@ class CluedoGame:
                 elif board[y-1, x] in rooms:
                     return board[y-1, x]                    
                 elif board[y, x-1] in rooms:
-                    return board[y, x-1]                    
+                    return board[y, x-1]
             
         return None
     
@@ -285,12 +285,12 @@ class CluedoGame:
         weapon_name = weapons.get(self.solution['weapon'], 'Unknown Weapon')
         return f"{player_name} in the {room_name} with the {weapon_name}"
     
-    def move_player(self, player_states, player_name, steps, board):
+    def move_player(self, player_states, player_name, steps, board, current_room):
         """
         Moving player for each turn
         """
         current_pos = player_states.get(player_name).current_position
-        
+
         if player_states.get(player_name).is_ai:
             new_pos = self.ai_move(current_pos, steps, board)
             player_states.get(player_name).current_position = new_pos
@@ -298,7 +298,24 @@ class CluedoGame:
         else:
             new_pos = current_pos
             remaining_steps = steps
-            
+            if current_room:
+                y, x = new_pos
+                if board[y-1, x] == board_labels["Empty"]:
+                    direction = "UP"
+                    test_pos = (y-1, x)
+                elif board[y+1, x] == board_labels["Empty"]:
+                    direction = "DOWN"
+                    test_pos = (y+1, x)
+                elif board[y, x+1] == board_labels["Empty"]:
+                    direction = "RIGHT"
+                    test_pos = (y, x+1)
+                elif board[y, x-1] == board_labels["Empty"]:
+                    direction = "LEFT"
+                    test_pos = (y, x-1)
+                new_pos = test_pos
+                remaining_steps -= 1
+                print(f"Moved to {new_pos}")
+                current_room = self.get_current_room(new_pos, board)
             while remaining_steps > 0:
                 print(f"Remaining steps: {remaining_steps}")
                 direction = input("Enter your move (e.g., UP, DOWN, LEFT, RIGHT) or DONE to exit: ").upper()

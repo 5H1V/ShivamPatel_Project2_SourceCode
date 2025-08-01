@@ -86,7 +86,7 @@ def play_human_turn(game, player_states, player_name, board):
     input(f"{player_name}, press Enter to roll dice")
     roll = random.randint(1, 6)
     print(f"{player_name}, your roll is {roll}")
-    success, new_room = game.move_player(player_states, player_name, roll, board)
+    success, new_room = game.move_player(player_states, player_name, roll, board, current_room)
 
     if success and new_room:
         room_name = rooms[new_room]
@@ -121,7 +121,7 @@ def play_ai_turn(game, player_states, player_name, board):
 
     roll = random.randint(1, 6)
     print(f"{player_name}, your roll is {roll}")
-    success, new_room = game.move_player(player_states, player_name, roll, board)
+    success, new_room = game.move_player(player_states, player_name, roll, board, current_room)
     if success and new_room:
         room_name = rooms[new_room]
         print(f"{player_name} entered the {room_name}.")
