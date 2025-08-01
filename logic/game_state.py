@@ -85,10 +85,10 @@ class CluedoGame:
                 # Updating AI knowledge
                 for ai_player_name, ai_player_state in player_states.items():
                     if ai_player_state.is_ai:
-                        # Someone showed AI a card
+                        # Someone showed AI a card, update knowledge
                         ai_player_state.update_AI_on_cards_shown(other_player, shown_card)
                 
-                        # Someone did not show AI a card, still uncertain
+                        # Someone did not show AI a card, still uncertain, update knowledge
                         if players_who_couldnt_refute:
                             ai_player_state.update_AI_on_refutations(suggestion, players_who_couldnt_refute)
                 
@@ -96,7 +96,6 @@ class CluedoGame:
                 suggesting_player_state = player_states.get(player)
                 if hasattr(suggesting_player_state, 'knowledge') and shown_card in suggesting_player_state.knowledge:
                     suggesting_player_state.knowledge.remove(shown_card)
-                
                 return shown_card
             else:
                 players_who_couldnt_refute.append(other_player)
@@ -128,28 +127,34 @@ class CluedoGame:
                 if board[y+1, x] in rooms:
                     return board[y+1, x]
                 elif board[y, x+1] in rooms:
-                    return board[y, x+1]                    
+                    return board[y, x+1]
                 elif board[y-1, x] in rooms:
-                    return board[y-1, x]                    
+                    return board[y-1, x]
                 elif board[y, x-1] in rooms:
                     return board[y, x-1]
-            
         return None
     
     def can_use_secret_passage(self, room_id):
         return room_id in secret_passages
     
-    def find_room_position(self, room_id, board):
-        for y in range(board.shape[0]):
-            for x in range(board.shape[1]):
-                if board[y, x] == room_id:
-                    return (y, x)
+    def find_secret_position(self, room_id, board):
+        if room_id == 10:  # Study
+            return (6,4)
+        elif room_id == 7: # Kitchen
+            return (21,17)
+        elif room_id == 4: # Conservatory
+            return (19, 6)
+        elif room_id == 9: # Lounge
+            return (4, 18)
         return None
     
     def use_secret_passage(self, player_name, player_states, board, current_room):
+        """
+        If a player is in a room containing secret passage, this will put them at the doorway of the other end
+        """
         target_room = secret_passages.get(current_room)
         if target_room:
-            target_pos = self.find_room_position(target_room, board)
+            target_pos = self.find_secret_position(target_room, board)
             if target_pos:
                 player_states.get(player_name).current_position = target_pos
                 return target_room
@@ -298,6 +303,7 @@ class CluedoGame:
         else:
             new_pos = current_pos
             remaining_steps = steps
+            # If player is in a room, move them out of it
             if current_room:
                 y, x = new_pos
                 if board[y-1, x] == board_labels["Empty"]:
@@ -354,7 +360,7 @@ class CluedoGame:
         new_pos = current_pos
         directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         
-        for _ in range(steps):
+        for step in range(steps):
             random.shuffle(directions)
             moved = False
             for dy, dx in directions:

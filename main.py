@@ -29,7 +29,7 @@ def main():
         player_states[name] = Player(name, card_hands, is_ai)
         player_states[name].eliminated = False
     
-    game = CluedoGame(player_states, board, game_solution)    
+    game = CluedoGame(player_states, board, game_solution)
     turn_count = 0
     # Keep game going until game over is validated
     while not game.is_game_over(player_states):
@@ -83,7 +83,7 @@ def play_human_turn(game, player_states, player_name, board):
                     return
     
     # Rolling Dice
-    input(f"{player_name}, press Enter to roll dice")
+    input(f"{player_name}, press Enter to roll dice ")
     roll = random.randint(1, 6)
     print(f"{player_name}, your roll is {roll}")
     success, new_room = game.move_player(player_states, player_name, roll, board, current_room)
@@ -118,7 +118,6 @@ def play_ai_turn(game, player_states, player_name, board):
                     game.make_suggestion_in_room(player_states, player_name, new_room)
                     return
     # Rolling dice
-
     roll = random.randint(1, 6)
     print(f"{player_name}, your roll is {roll}")
     success, new_room = game.move_player(player_states, player_name, roll, board, current_room)
